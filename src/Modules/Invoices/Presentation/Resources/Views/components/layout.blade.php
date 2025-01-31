@@ -42,6 +42,7 @@
                 flex-direction: row;
             }
 
+
             a.btn,
             button {
                 width: auto;
@@ -66,6 +67,17 @@
             button:active {
                 outline: none;
             }
+
+            a.green,
+            button.green {
+                background-color: #28a745;
+            }
+
+            a.green:hover,
+            button.green:hover {
+                background-color: #218838;
+            }
+
         </style>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">

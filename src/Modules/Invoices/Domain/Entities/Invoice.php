@@ -53,4 +53,19 @@ class Invoice extends Model
             return $invoiceProductLine->getTotalUnitPrice();
         });
     }
+
+    public function hasValidProductLines(): bool
+    {
+        if ($this->invoiceProductLines->isEmpty()) {
+            return false;
+        }
+
+        foreach ($this->invoiceProductLines as $invoiceProductLine) {
+            if ($invoiceProductLine->quantity <= 0 || $invoiceProductLine->unit_price <= 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

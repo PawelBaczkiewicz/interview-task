@@ -15,4 +15,5 @@ Route::prefix('invoices')
         Route::post('/', [InvoiceController::class, 'store'])->name('store');
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
         Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+        Route::post('{invoice}/send', [InvoiceController::class, 'send'])->name('send');
     });

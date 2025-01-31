@@ -32,13 +32,19 @@ class InvoiceController
         return view('invoices.index', compact('invoices'));
     }
 
-
     public function create()
     {
         return view('invoices.create', [
             'maxQuantity' => $this->invoiceValidator->getMaxQuantity(),
             'maxUnitPrice' => $this->invoiceValidator->getMaxUnitPrice(),
         ]);
+    }
+
+    public function send(string $id)
+    {
+        $invoice = $this->assertInvoice($id);
+        $this->invoiceService->sendInvoiceNotification($invoice);
+        return redirect()->route('invoices.index');
     }
 
 

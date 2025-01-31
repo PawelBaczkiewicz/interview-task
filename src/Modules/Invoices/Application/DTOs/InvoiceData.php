@@ -2,7 +2,6 @@
 
 namespace Modules\Invoices\Application\DTOs;
 
-use Modules\Invoices\Domain\Entities\InvoiceProductLine;
 use Modules\Invoices\Application\DTOs\InvoiceProductLineData;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Ramsey\Uuid\Uuid;

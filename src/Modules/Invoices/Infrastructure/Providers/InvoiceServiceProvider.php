@@ -6,19 +6,27 @@ namespace Modules\Invoices\Infrastructure\Providers;
 
 use Modules\Invoices\Domain\Factories\InvoiceFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Modules\Invoices\Application\Listeners\InvoiceStatusListener;
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Entities\InvoiceProductLine;
 use Modules\Invoices\Domain\Facades\InvoiceFacadeInterface;
 use Modules\Invoices\Domain\Factories\InvoiceProductLineFactory;
 use Modules\Invoices\Infrastructure\Persistence\Facades\InvoiceFacade;
+use Modules\Notifications\Api\Events\ResourceDeliveredEvent;
+use Modules\Notifications\Infrastructure\Drivers\DriverInterface;
+use Modules\Notifications\Infrastructure\Drivers\DummyDriver;
 
-class InvoiceServiceProvider extends ServiceProvider
+final class InvoiceServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+
+        $this->app->scoped(DriverInterface::class, DummyDriver::class);
         $this->app->bind(InvoiceFacadeInterface::class, InvoiceFacade::class);
+
         $this->registerFactories();
         $this->registerViews();
     }
@@ -45,8 +53,18 @@ class InvoiceServiceProvider extends ServiceProvider
         });
     }
 
+    public function shouldDiscoverEvents(): bool
+    {
+        return true;
+    }
+
     public function boot(): void
     {
+        Event::listen(
+            ResourceDeliveredEvent::class,
+            InvoiceStatusListener::class,
+        );
+
         $this->loadMigrationsFrom(modules_path('Invoices/Infrastructure/Persistence/Migrations'));
     }
 }

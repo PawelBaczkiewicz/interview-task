@@ -8,11 +8,41 @@ use Illuminate\Support\Facades\DB;
 use Modules\Invoices\Application\DTOs\InvoiceData;
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Entities\InvoiceProductLine;
+use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Facades\InvoiceFacadeInterface;
 
 class InvoiceFacade implements InvoiceFacadeInterface
 {
-    protected function createInvoiceAndProductLines(InvoiceData $data): Invoice
+    public function create(InvoiceData $data): Invoice
+    {
+        try {
+            return DB::transaction(function () use ($data) {
+                $invoice = $this->createWithProductLines($data);
+                return $invoice;
+            });
+        } catch (QueryException $e) {
+            throw new \RuntimeException('Database error: ' . $e->getMessage(), 0, $e);
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Unexpected error: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    public function find(string $id): ?Invoice
+    {
+        return Invoice::with('invoiceProductLines')->find($id);
+    }
+
+    public function getAll(): Collection
+    {
+        return Invoice::with('invoiceProductLines')->get();
+    }
+    public function updateStatus(Invoice $invoice, StatusEnum $status)
+    {
+        $invoice->status = $status;
+        $invoice->save();
+    }
+
+    protected function createWithProductLines(InvoiceData $data): Invoice
     {
         $invoice = Invoice::create([
             'customer_name' => $data->customer_name,
@@ -31,30 +61,5 @@ class InvoiceFacade implements InvoiceFacadeInterface
         }
 
         return $invoice;
-    }
-
-
-    public function create(InvoiceData $data): Invoice
-    {
-        try {
-            return DB::transaction(function () use ($data) {
-                $invoice = $this->createInvoiceAndProductLines($data);
-                return $invoice;
-            });
-        } catch (QueryException $e) {
-            throw new \RuntimeException('Database error: ' . $e->getMessage(), 0, $e);
-        } catch (\Exception $e) {
-            throw new \RuntimeException('Unexpected error: ' . $e->getMessage(), 0, $e);
-        }
-    }
-
-    public function find(string $id): ?Invoice
-    {
-        return Invoice::with('invoiceProductLines')->find($id);
-    }
-
-    public function getAll(): Collection
-    {
-        return Invoice::with('invoiceProductLines')->get();
     }
 }

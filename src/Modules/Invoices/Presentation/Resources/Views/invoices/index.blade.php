@@ -24,6 +24,10 @@
                         <td>{{ $invoice->getTotalPrice() }}</td>
                         <td>
                             <a href="{{ route('invoices.show', $invoice) }}" class="btn">Show</a>
+                            <form action="{{ route('invoices.send', $invoice) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn green">Send</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
