@@ -3,11 +3,12 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Invoices\Infrastructure\Persistence\Seeders\InvoiceSeeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void {}
+    public function run(): void
+    {
+        $this->call(InvoiceSeeder::class);
+    }
 }

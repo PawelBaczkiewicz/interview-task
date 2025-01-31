@@ -8,16 +8,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('invoice_product_lines', static function (Blueprint $table): void {
             $table->uuid('id')->primary();
             $table->uuid('invoice_id');
-            $table->string('name');
-            $table->integer('price');
+            $table->string('product_name');
+            $table->integer('unit_price');
             $table->integer('quantity');
             $table->timestamps();
 
@@ -25,9 +23,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+
     public function down(): void
     {
         Schema::dropIfExists('invoice_product_lines');
