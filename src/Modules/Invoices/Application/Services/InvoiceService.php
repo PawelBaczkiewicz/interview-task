@@ -3,19 +3,20 @@
 namespace Modules\Invoices\Application\Services;
 
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 use Modules\Invoices\Application\DTOs\InvoiceData;
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Facades\InvoiceFacadeInterface;
-use Modules\Notifications\Application\Facades\NotificationFacade;
 use Modules\Notifications\Api\Dtos\NotifyData;
+use Modules\Notifications\Api\NotificationFacadeInterface;
 use Ramsey\Uuid\Uuid;
 
 class InvoiceService
 {
     public function __construct(
         private InvoiceFacadeInterface $invoiceFacadeInterface,
-        private NotificationFacade $notificationFacade
+        private NotificationFacadeInterface $notificationFacade
     ) {}
 
     public function createInvoice(InvoiceData $dto): Invoice
@@ -55,8 +56,11 @@ class InvoiceService
             message: $message
         );
 
-        $this->notificationFacade->notify($notifyData);
+        Log::channel('devlogs')->info("Sending notification for invoice ID: {$invoice->id}");
+
         $this->updateInvoiceStatus($invoice, StatusEnum::Sending);
+
+        $this->notificationFacade->notify($notifyData);
     }
 
     public function updateInvoiceStatus(Invoice $invoice, StatusEnum $status)

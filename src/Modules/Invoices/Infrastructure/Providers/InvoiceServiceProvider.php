@@ -16,15 +16,12 @@ use Modules\Invoices\Domain\Facades\InvoiceFacadeInterface;
 use Modules\Invoices\Domain\Factories\InvoiceProductLineFactory;
 use Modules\Invoices\Infrastructure\Persistence\Facades\InvoiceFacade;
 use Modules\Notifications\Api\Events\ResourceDeliveredEvent;
-use Modules\Notifications\Infrastructure\Drivers\DriverInterface;
-use Modules\Notifications\Infrastructure\Drivers\DummyDriver;
 
 final class InvoiceServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
 
-        $this->app->scoped(DriverInterface::class, DummyDriver::class);
         $this->app->bind(InvoiceFacadeInterface::class, InvoiceFacade::class);
 
         $this->registerFactories();

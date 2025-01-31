@@ -2,23 +2,24 @@
 
 namespace Modules\Invoices\Domain\Entities;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Ramsey\Uuid\Uuid;
 
 class Invoice extends Model
 {
     use HasFactory;
-
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
         'customer_name',
         'customer_email',
-        'status',
+        'status'
     ];
 
     protected function casts(): array
@@ -47,21 +48,32 @@ class Invoice extends Model
         return $this->hasMany(InvoiceProductLine::class, 'invoice_id', 'id');
     }
 
-    public function getTotalPrice(): int
+    public function getTotalPriceAttribute(): int
     {
-        return $this->invoiceProductLines->sum(function (InvoiceProductLine $invoiceProductLine) {
-            return $invoiceProductLine->getTotalUnitPrice();
-        });
+        // optimalization to avoid multiple queries to the database (InvoicesFacade::getAll)
+        if (array_key_exists('total_price', $this->attributes)) {
+            return (int) $this->attributes['total_price'];
+        }
+
+        return $this->getTotalPrice();
     }
 
+    public function getTotalPrice(): int
+    {
+        return $this->invoiceProductLines()->get()->sum(fn(InvoiceProductLine $line) => $line->getTotalUnitPrice());
+    }
+
+    // Invoice Critera: To be sent, an invoice must contain product lines with both quantity and unit price as positive integers greater than zero.
     public function hasValidProductLines(): bool
     {
-        if ($this->invoiceProductLines->isEmpty()) {
+        $invoiceProductLines = $this->invoiceProductLines()->get();
+
+        if ($invoiceProductLines->isEmpty()) {
             return false;
         }
 
-        foreach ($this->invoiceProductLines as $invoiceProductLine) {
-            if ($invoiceProductLine->quantity <= 0 || $invoiceProductLine->unit_price <= 0) {
+        foreach ($invoiceProductLines as $invoiceProductLine) {
+            if ($invoiceProductLine->getTotalUnitPrice() <= 0) {
                 return false;
             }
         }

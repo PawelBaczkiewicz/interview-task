@@ -21,9 +21,9 @@ class InvoiceFacade implements InvoiceFacadeInterface
                 return $invoice;
             });
         } catch (QueryException $e) {
-            throw new \RuntimeException('Database error: ' . $e->getMessage(), 0, $e);
+            throw new \Exception('Database error: ' . $e->getMessage(), 0, $e);
         } catch (\Exception $e) {
-            throw new \RuntimeException('Unexpected error: ' . $e->getMessage(), 0, $e);
+            throw new \Exception('Unexpected error: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -34,7 +34,12 @@ class InvoiceFacade implements InvoiceFacadeInterface
 
     public function getAll(): Collection
     {
-        return Invoice::with('invoiceProductLines')->get();
+        // optimalization to avoid multiple queries to the database
+        // in Invoice::getTotalPriceAttribute method using this total_price attribute
+        return Invoice::with('invoiceProductLines')
+            ->select('invoices.*', DB::raw('(SELECT SUM(unit_price * quantity) FROM invoice_product_lines WHERE invoice_product_lines.invoice_id = invoices.id) as total_price'))
+            ->get();
+        //return Invoice::with('invoiceProductLines')->get();
     }
     public function updateStatus(Invoice $invoice, StatusEnum $status)
     {
@@ -45,6 +50,7 @@ class InvoiceFacade implements InvoiceFacadeInterface
     protected function createWithProductLines(InvoiceData $data): Invoice
     {
         $invoice = Invoice::create([
+            'id' => $data->id,
             'customer_name' => $data->customer_name,
             'customer_email' => $data->customer_email,
             'status' => $data->status,
@@ -52,6 +58,7 @@ class InvoiceFacade implements InvoiceFacadeInterface
 
         foreach ($data->invoiceProductLines as $productLineData) {
             $invoiceProductLine = new InvoiceProductLine([
+                'id' => $productLineData->id,
                 'invoice_id' => $invoice->id,
                 'product_name' => $productLineData->product_name,
                 'quantity' => $productLineData->quantity,

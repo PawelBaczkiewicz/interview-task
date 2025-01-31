@@ -9,13 +9,22 @@ use Ramsey\Uuid\UuidInterface;
 
 final readonly class InvoiceData
 {
+    public UuidInterface $id;
+    public StatusEnum $status;
+
+    /**
+     * @param string $customer_name
+     * @param string $customer_email
+     * @param InvoiceProductLineData[] $invoiceProductLines
+     */
     public function __construct(
-        public ?UuidInterface $id = null,
         public string $customer_name,
         public string $customer_email,
-        public string $status,
         public ?array $invoiceProductLines = []
-    ) {}
+    ) {
+        $this->id = Uuid::uuid4();
+        $this->status = StatusEnum::Draft;
+    }
 
     public static function fromArray(array $data): self
     {
@@ -24,10 +33,8 @@ final readonly class InvoiceData
         }, $data['invoiceProductLines'] ?? []);
 
         return new self(
-            id: isset($data['id']) ? Uuid::fromString($data['id']) : null,
             customer_name: $data['customer_name'],
             customer_email: $data['customer_email'],
-            status: $data['status'] ?? StatusEnum::Draft->value,
             invoiceProductLines: $invoiceProductLines
         );
     }
@@ -38,7 +45,7 @@ final readonly class InvoiceData
             'id' => $this->id?->toString(),
             'customer_name' => $this->customer_name,
             'customer_email' => $this->customer_email,
-            'status' => $this->status,
+            'status' => $this->status->value,
             'invoiceProductLines' => $this->invoiceProductLines ?? []
         ];
     }

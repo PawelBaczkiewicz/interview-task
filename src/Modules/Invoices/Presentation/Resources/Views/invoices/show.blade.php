@@ -2,8 +2,8 @@
     <x-slot name="title">Invoice ID: {{ $invoice->id }}</x-slot>
     <div>
         @if($invoice->invoiceProductLines->isEmpty())
-        @else
             <h3>Invoice has no Invoice Product Lines</h3>
+        @else
             <table>
                 <thead>
                     <tr>
@@ -27,9 +27,9 @@
         <div>
             <h3>Total Price: {{ $invoice->getTotalPrice() }}</h3>
         </div>
+        @endif
         <div>
             <a href="{{ route('invoices.index') }}" class="btn">Back</a>
         </div>
-        @endif
     </div>
 </x-layout>

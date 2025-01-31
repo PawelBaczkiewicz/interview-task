@@ -1,3 +1,7 @@
+@php
+    use Modules\Invoices\Domain\Enums\StatusEnum;
+@endphp
+
 <x-layout>
     <x-slot name="title">Invoices</x-slot>
     <div>
@@ -21,13 +25,15 @@
                         <td>{{ $invoice->customer_name }}</td>
                         <td>{{ $invoice->customer_email }}</td>
                         <td>{{ $invoice->status }}</td>
-                        <td>{{ $invoice->getTotalPrice() }}</td>
+                        <td>{{ $invoice->total_price }}</td>
                         <td>
                             <a href="{{ route('invoices.show', $invoice) }}" class="btn">Show</a>
-                            <form action="{{ route('invoices.send', $invoice) }}" method="POST" style="display:inline;">
-                                @csrf
-                                <button type="submit" class="btn green">Send</button>
-                            </form>
+                            @if ($invoice->total_price > 0 && $invoice->status === StatusEnum::Draft)
+                                <form action="{{ route('invoices.send', $invoice) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    <button type="submit" class="btn green">Send</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

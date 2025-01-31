@@ -3,6 +3,7 @@
 namespace Modules\Invoices\Presentation\Http\Controllers;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Modules\Invoices\Application\DTOs\InvoiceData;
@@ -43,20 +44,29 @@ class InvoiceController
     public function send(string $id)
     {
         $invoice = $this->assertInvoice($id);
-        $this->invoiceService->sendInvoiceNotification($invoice);
+
+        try {
+            $this->invoiceService->sendInvoiceNotification($invoice);
+        } catch (\Exception $e) {
+            return redirect()->route('invoices.index')->with('flash_error', $e->getMessage());
+        };
+
         return redirect()->route('invoices.index');
     }
-
 
     public function store(Request $request)
     {
         $validatedData = $this->invoiceValidator->validate($request->all());
         $invoiceData = InvoiceData::fromArray($validatedData);
-        $invoice = $this->invoiceService->createInvoice($invoiceData);
+
+        try {
+            $invoice = $this->invoiceService->createInvoice($invoiceData);
+        } catch (\Exception $e) {
+            return redirect()->route('invoices.create')->with('flash_error', $e->getMessage());
+        }
 
         return redirect()->route('invoices.index')->with('flash_success', "Invoice with ID: {$invoice->id} created successfully");
     }
-
 
     public function show(string $id)
     {

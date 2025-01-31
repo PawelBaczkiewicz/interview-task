@@ -2,6 +2,7 @@
 
 namespace Modules\Invoices\Application\Listeners;
 
+use Illuminate\Support\Facades\Log;
 use Modules\Invoices\Application\Services\InvoiceService;
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Enums\StatusEnum;
@@ -15,9 +16,10 @@ class InvoiceStatusListener
 
     public function handle(ResourceDeliveredEvent $event)
     {
-        $invoiceId = $event->resourceId;
-        $invoice = $this->invoiceService->findInvoice($invoiceId);
+        Log::channel('devlogs')->info('InvoiceStatusListener: ResourceDeliveredEvent received:' . $event->resourceId);
 
+        $invoiceId = $event->resourceId;
+        $invoice = $this->invoiceService->findInvoice($invoiceId);;
         if ($invoice instanceof Invoice && $invoice->status === StatusEnum::Sending) {
             $this->invoiceService->updateInvoiceStatus($invoice, StatusEnum::SentToClient);
         }

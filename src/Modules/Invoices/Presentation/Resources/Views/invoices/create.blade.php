@@ -1,13 +1,13 @@
 <x-layout>
     <x-slot name="title">Create Invoice</x-slot>
 
-    <form method="POST" action="{{ route('invoices.store') }}" x-data="invoiceForm()" class="flex flexColumn">
+    <form method="POST" action="{{ route('invoices.store') }}" x-data="invoiceForm({{ json_encode(old('invoiceProductLines', [])) }})" class="flex flexColumn">
         @csrf
 
         <!-- for debugging only (dev) -->
         @if (app()->environment('local'))
             @if ($errors->any())
-                <div class="bg-red-100 text-red-600 p-3 mb-4 rounded">
+                <div style="color:red;">
                     <ul>
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -19,19 +19,16 @@
 
         <div>
             <label for="customer_name">Customer Name *</label>
-            <input type="text" name="customer_name" id="customer_name" required>
-            @error('customer_name')
-                <span class="text-red-500 text-sm">{{ $message }}</span>
-            @enderror
+            <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name', '') }}" required>
         </div>
         <div>
             <label for="customer_email">Customer E-mail *</label>
-            <input type="email" name="customer_email" id="customer_email" required>
-            @error('customer_email')
-                <span class="text-red-500 text-sm">{{ $message }}</span>
-            @enderror
+            <input type="email" name="customer_email" id="customer_email" value="{{ old('customer_email', '') }}" required>
         </div>
 
+        <div x-show="productLines.length > 0">
+            Product Lines
+        </div>
         <template x-for="(line, index) in productLines" :key="index">
             <div>
                 <input type="text" x-bind:name="'invoiceProductLines[' + index + '][product_name]'" x-model="line.productName" placeholder="Product Name" required>
@@ -62,9 +59,13 @@
 
 
 
-    function invoiceForm() {
+    function invoiceForm(oldProductLines) {
         return {
-            productLines: [],
+            productLines: oldProductLines.length ? oldProductLines.map(line => ({
+                productName: line.product_name || '',
+                quantity: line.quantity || 1,
+                unitPrice: line.unit_price || 1,
+            })) : [],
             grandTotal: 0,
             addLine() {
                 const line = { productName: '', quantity: 0, unitPrice: 0, total: 0 };

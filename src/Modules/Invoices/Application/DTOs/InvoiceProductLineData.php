@@ -7,17 +7,19 @@ use Ramsey\Uuid\UuidInterface;
 
 final readonly class InvoiceProductLineData
 {
+    public UuidInterface $id;
+
     public function __construct(
-        public ?UuidInterface $id,
         public string $product_name,
         public int $unit_price,
         public int $quantity
-    ) {}
+    ) {
+        $this->id = Uuid::uuid4();
+    }
 
     public static function fromArray(array $data): self
     {
         return new self(
-            id: isset($data['id']) ? Uuid::fromString($data['id']) : null,
             product_name: $data['product_name'],
             quantity: $data['quantity'],
             unit_price: $data['unit_price']

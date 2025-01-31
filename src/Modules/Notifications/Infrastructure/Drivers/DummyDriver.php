@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Notifications\Infrastructure\Drivers;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 class DummyDriver implements DriverInterface
 {
     public function send(
@@ -12,6 +15,15 @@ class DummyDriver implements DriverInterface
         string $message,
         string $reference,
     ): bool {
-        return true;
+
+        Log::channel('devlogs')->info('DummyDriver successful, calling webhook to dispatch event for invoice ' . $reference);
+
+        $action = 'delivered';
+        $url = route('notification.hook', ['action' => $action, 'reference' => $reference]);
+
+        $response = Http::get($url);
+
+        // HTTP_OK included
+        return $response->successful();
     }
 }
