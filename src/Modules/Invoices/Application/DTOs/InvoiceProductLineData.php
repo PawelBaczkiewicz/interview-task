@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Application\DTOs;
 
 use Ramsey\Uuid\Uuid;
@@ -21,8 +23,8 @@ final readonly class InvoiceProductLineData
     {
         return new self(
             product_name: $data['product_name'],
-            quantity: $data['quantity'],
-            unit_price: $data['unit_price']
+            quantity: (int) $data['quantity'],
+            unit_price: (int) $data['unit_price']
         );
     }
 

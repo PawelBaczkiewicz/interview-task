@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Infrastructure\Persistence\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -17,7 +19,8 @@ class InvoiceSeeder extends Seeder
         $invoices->each(function ($invoice) {
             InvoiceProductLine::factory()
                 ->count(rand(0, 5))
-                ->create(['invoice_id' => $invoice->id]); // override invoice_id default behaviour from InvoiceProductLineFactory
+                ->create(['invoice_id' => $invoice->id]);
+            // override invoice_id default behaviour from InvoiceProductLineFactory
         });
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Infrastructure\Persistence\Facades;
 
 use Illuminate\Database\Eloquent\Collection;
@@ -37,7 +39,11 @@ class InvoiceFacade implements InvoiceFacadeInterface
         // optimalization to avoid multiple queries to the database
         // in Invoice::getTotalPriceAttribute method using this total_price attribute
         return Invoice::with('invoiceProductLines')
-            ->select('invoices.*', DB::raw('(SELECT SUM(unit_price * quantity) FROM invoice_product_lines WHERE invoice_product_lines.invoice_id = invoices.id) as total_price'))
+            ->select(
+                'invoices.*',
+                DB::raw('(SELECT SUM(unit_price * quantity) FROM invoice_product_lines
+                WHERE invoice_product_lines.invoice_id = invoices.id) as total_price')
+            )
             ->get();
         //return Invoice::with('invoiceProductLines')->get();
     }

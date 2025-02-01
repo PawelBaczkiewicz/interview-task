@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Application\DTOs;
 
 use Modules\Invoices\Application\DTOs\InvoiceProductLineData;

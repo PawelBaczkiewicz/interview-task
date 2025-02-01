@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Domain\Validators;
 
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Factory as ValidationFactory;
 
 class InvoiceValidator
@@ -17,7 +18,11 @@ class InvoiceValidator
         return 10000000;
     }
 
-    public function __construct(private ValidationFactory $validationFactory) {}
+    public function __construct(private ValidationFactory $validationFactory)
+    {
+        //
+    }
+
     public function validate(array $data)
     {
         $validator = $this->validationFactory->make($data, [

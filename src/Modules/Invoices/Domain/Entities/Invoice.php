@@ -1,18 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Domain\Entities;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\DB;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Ramsey\Uuid\Uuid;
 
 class Invoice extends Model
 {
     use HasFactory;
+
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -60,10 +61,13 @@ class Invoice extends Model
 
     public function getTotalPrice(): int
     {
-        return $this->invoiceProductLines()->get()->sum(fn(InvoiceProductLine $line) => $line->getTotalUnitPrice());
+        return $this->invoiceProductLines()->get()->sum(
+            fn(InvoiceProductLine $line) => $line->getTotalUnitPrice()
+        );
     }
 
-    // Invoice Critera: To be sent, an invoice must contain product lines with both quantity and unit price as positive integers greater than zero.
+    // Invoice Critera: To be sent, an invoice must contain product lines with both quantity
+    //and unit price as positive integers greater than zero.
     public function hasValidProductLines(): bool
     {
         $invoiceProductLines = $this->invoiceProductLines()->get();

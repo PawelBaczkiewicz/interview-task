@@ -16,7 +16,8 @@ use Tests\TestCase;
 
 class InvoiceFacadeTest extends TestCase
 {
-    use WithFaker, RefreshDatabase;
+    use WithFaker;
+    use RefreshDatabase;
 
     protected InvoiceFacade $invoiceFacade;
 

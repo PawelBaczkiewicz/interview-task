@@ -13,5 +13,7 @@ final readonly class NotifyData
         public string $toEmail,
         public string $subject,
         public string $message,
-    ) {}
+    ) {
+        //
+    }
 }

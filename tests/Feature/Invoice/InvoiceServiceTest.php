@@ -11,16 +11,15 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Facades\InvoiceFacadeInterface;
-use Modules\Notifications\Api\Dtos\NotifyData;
 use Modules\Notifications\Api\NotificationFacadeInterface;
 use Modules\Invoices\Application\Services\InvoiceService;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
-use PHPUnit\Framework\Attributes\DataProvider;
 
 class InvoiceServiceTest extends TestCase
 {
-    use WithFaker, RefreshDatabase;
+    use WithFaker;
+    use RefreshDatabase;
 
     protected InvoiceFacadeInterface $invoiceFacade;
     protected NotificationFacadeInterface $notificationFacade;

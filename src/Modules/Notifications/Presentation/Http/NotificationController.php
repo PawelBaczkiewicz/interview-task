@@ -12,7 +12,9 @@ final readonly class NotificationController
 {
     public function __construct(
         private NotificationService $notificationService,
-    ) {}
+    ) {
+        //
+    }
 
     public function hook(string $action, string $reference): JsonResponse
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Application\Services;
 
 use Illuminate\Database\Eloquent\Collection;
@@ -17,7 +19,9 @@ class InvoiceService
     public function __construct(
         private InvoiceFacadeInterface $invoiceFacadeInterface,
         private NotificationFacadeInterface $notificationFacade
-    ) {}
+    ) {
+        //
+    }
 
     public function createInvoice(InvoiceData $dto): Invoice
     {

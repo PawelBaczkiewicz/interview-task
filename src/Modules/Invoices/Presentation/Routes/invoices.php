@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Modules\Invoices\Presentation\Http\Controllers\InvoiceController;
 use Ramsey\Uuid\Validator\GenericValidator;
 
-Route::pattern('invoice', (new GenericValidator)->getPattern());
+Route::pattern('invoice', (new GenericValidator())->getPattern());
 
 Route::prefix('invoices')
     ->name('invoices.')

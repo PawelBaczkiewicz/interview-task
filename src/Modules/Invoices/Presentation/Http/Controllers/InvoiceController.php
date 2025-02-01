@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Invoices\Presentation\Http\Controllers;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Modules\Invoices\Application\DTOs\InvoiceData;
@@ -16,7 +17,9 @@ class InvoiceController
     public function __construct(
         protected InvoiceService $invoiceService,
         protected InvoiceValidator $invoiceValidator
-    ) {}
+    ) {
+        //
+    }
 
     protected function assertInvoice(string $id): Invoice
     {
@@ -65,7 +68,10 @@ class InvoiceController
             return redirect()->route('invoices.create')->with('flash_error', $e->getMessage());
         }
 
-        return redirect()->route('invoices.index')->with('flash_success', "Invoice with ID: {$invoice->id} created successfully");
+        return redirect()->route('invoices.index')->with(
+            'flash_success',
+            "Invoice with ID: {$invoice->id} created successfully"
+        );
     }
 
     public function show(string $id)

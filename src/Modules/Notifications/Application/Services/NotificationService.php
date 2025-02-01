@@ -12,7 +12,9 @@ final readonly class NotificationService
 {
     public function __construct(
         private Dispatcher $dispatcher,
-    ) {}
+    ) {
+        //
+    }
 
     public function delivered(string $reference): void
     {
