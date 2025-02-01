@@ -68,7 +68,11 @@ $\textsf{\color{#5ec3d5}{and we can discuss my approach in more detail. Regardin
 $\textsf{\color{#5ec3d5}{company guidelines, documentation, design patterns, and standards like PSR-4/12,}}$
 $\textsf{\color{#5ec3d5}{we can cover those later so that I can fully adapt to the team's expectations.}}$
 
+    $\textsf{\color{#5ec3d5}{The project complies with PHPCS and PHPStan requirements.}}$
+
     $\textsf{\color{#5ec3d5}{I am open to feedback and comments on my work. Thank you.}}$
+
+    
 
 ## Setup Instructions:
 
