@@ -4,12 +4,21 @@ declare(strict_types=1);
 
 namespace Modules\Invoices\Domain\Entities;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @property string $id
+ * @property string $customer_name
+ * @property string $customer_email
+ * @property StatusEnum $status
+ * @property Collection<InvoiceProductLine> $invoiceProductLines
+ * @property int $total_price
+ */
 class Invoice extends Model
 {
     use HasFactory;
@@ -61,8 +70,11 @@ class Invoice extends Model
 
     public function getTotalPrice(): int
     {
-        return $this->invoiceProductLines()->get()->sum(
-            fn(InvoiceProductLine $line) => $line->getTotalUnitPrice()
+        /** @var Collection<InvoiceProductLine> $invoiceProductLines */
+        $invoiceProductLines = $this->invoiceProductLines()->get();
+
+        return $invoiceProductLines->sum(
+            fn($line) => $line instanceof InvoiceProductLine ? $line->getTotalUnitPrice() : 0
         );
     }
 
@@ -70,6 +82,7 @@ class Invoice extends Model
     //and unit price as positive integers greater than zero.
     public function hasValidProductLines(): bool
     {
+        /** @var Collection<InvoiceProductLine> $invoiceProductLines */
         $invoiceProductLines = $this->invoiceProductLines()->get();
 
         if ($invoiceProductLines->isEmpty()) {

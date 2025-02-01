@@ -44,7 +44,7 @@ final readonly class InvoiceData
     public function __toArray(): array
     {
         return [
-            'id' => $this->id?->toString(),
+            'id' => $this->id->toString(),
             'customer_name' => $this->customer_name,
             'customer_email' => $this->customer_email,
             'status' => $this->status->value,

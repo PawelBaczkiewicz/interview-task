@@ -7,7 +7,6 @@ namespace Tests\Feature\Invoice;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Modules\Invoices\Application\DTOs\InvoiceData;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Modules\Invoices\Domain\Entities\Invoice;
 use Modules\Invoices\Domain\Enums\StatusEnum;
 use Modules\Invoices\Domain\Facades\InvoiceFacadeInterface;
@@ -15,78 +14,97 @@ use Modules\Notifications\Api\NotificationFacadeInterface;
 use Modules\Invoices\Application\Services\InvoiceService;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use Illuminate\Database\Eloquent\Collection;
 
 class InvoiceServiceTest extends TestCase
 {
     use WithFaker;
     use RefreshDatabase;
 
-    protected InvoiceFacadeInterface $invoiceFacade;
-    protected NotificationFacadeInterface $notificationFacade;
-    protected InvoiceService $invoiceService;
-
     protected function setUp(): void
     {
         parent::setUp();
         $this->setUpFaker();
-
-        $this->invoiceFacade = $this->createMock(InvoiceFacadeInterface::class);
-        $this->notificationFacade = $this->createMock(NotificationFacadeInterface::class);
-
-        $this->invoiceService = new InvoiceService(
-            $this->invoiceFacade,
-            $this->notificationFacade
-        );
     }
 
     public function testCreateInvoice(): void
     {
+        $invoiceFacade = $this->createMock(InvoiceFacadeInterface::class);
+        $notificationFacade = $this->createMock(NotificationFacadeInterface::class);
+        $invoiceService = new InvoiceService(
+            $invoiceFacade,
+            $notificationFacade
+        );
+
         $invoiceData = new InvoiceData(
             customer_name: $this->faker->name(),
             customer_email: $this->faker->email()
         );
 
         $invoice = new Invoice();
-        $this->invoiceFacade->expects($this->once())
+
+        $invoiceFacade->expects($this->once())
             ->method('create')
             ->with($invoiceData)
             ->willReturn($invoice);
 
-        $result = $this->invoiceService->createInvoice($invoiceData);
+
+        $result = $invoiceService->createInvoice($invoiceData);
 
         $this->assertInstanceOf(Invoice::class, $result);
     }
 
     public function testFindInvoice(): void
     {
+        $invoiceFacade = $this->createMock(InvoiceFacadeInterface::class);
+        $notificationFacade = $this->createMock(NotificationFacadeInterface::class);
+        $invoiceService = new InvoiceService(
+            $invoiceFacade,
+            $notificationFacade
+        );
+
         $invoice = new Invoice();
         $invoiceId = Uuid::uuid4()->toString();
 
-        $this->invoiceFacade->expects($this->once())
+        $invoiceFacade->expects($this->once())
             ->method('find')
             ->with($invoiceId)
             ->willReturn($invoice);
 
-        $result = $this->invoiceService->findInvoice($invoiceId);
+        $result = $invoiceService->findInvoice($invoiceId);
 
         $this->assertInstanceOf(Invoice::class, $result);
     }
 
     public function testGetAllInvoices(): void
     {
-        $invoices = new EloquentCollection([new Invoice(), new Invoice()]);
+        $invoiceFacade = $this->createMock(InvoiceFacadeInterface::class);
+        $notificationFacade = $this->createMock(NotificationFacadeInterface::class);
+        $invoiceService = new InvoiceService(
+            $invoiceFacade,
+            $notificationFacade
+        );
 
-        $this->invoiceFacade->expects($this->once())
+        $invoices = new Collection([new Invoice(), new Invoice()]);
+
+        $invoiceFacade->expects($this->once())
             ->method('getAll')
             ->willReturn($invoices);
 
-        $result = $this->invoiceService->getAllInvoices();
+        $result = $invoiceService->getAllInvoices();
 
         $this->assertCount(2, $result);
     }
 
     public function testSendInvoiceNotificationThrowsExceptionForInvalidStatus(): void
     {
+        $invoiceFacade = $this->createMock(InvoiceFacadeInterface::class);
+        $notificationFacade = $this->createMock(NotificationFacadeInterface::class);
+        $invoiceService = new InvoiceService(
+            $invoiceFacade,
+            $notificationFacade
+        );
+
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Wrong Invoice status to be sent.');
 
@@ -95,11 +113,18 @@ class InvoiceServiceTest extends TestCase
             ['status', StatusEnum::Sending],
         ]);
 
-        $this->invoiceService->sendInvoiceNotification($invoice);
+        $invoiceService->sendInvoiceNotification($invoice);
     }
 
     public function testSendInvoiceNotificationThrowsExceptionForInvalidProductLines(): void
     {
+        $invoiceFacade = $this->createMock(InvoiceFacadeInterface::class);
+        $notificationFacade = $this->createMock(NotificationFacadeInterface::class);
+        $invoiceService = new InvoiceService(
+            $invoiceFacade,
+            $notificationFacade
+        );
+
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Invoice must contain valid product lines to be sent.');
 
@@ -112,6 +137,6 @@ class InvoiceServiceTest extends TestCase
             ->method('hasValidProductLines')
             ->willReturn(false);
 
-        $this->invoiceService->sendInvoiceNotification($invoice);
+        $invoiceService->sendInvoiceNotification($invoice);
     }
 }

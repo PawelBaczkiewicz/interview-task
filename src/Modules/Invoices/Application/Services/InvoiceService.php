@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Invoices\Application\Services;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Modules\Invoices\Application\DTOs\InvoiceData;
 use Modules\Invoices\Domain\Entities\Invoice;
@@ -50,13 +50,13 @@ class InvoiceService
 
         $message =
             "Your invoice is ready.\n" .
-            "There are {$invoice->invoiceProductLines->count()} Invoice Product Lines in the invoice.\n" .
+            "There are {$invoice->invoiceProductLines()->count()} Invoice Product Lines in the invoice.\n" .
             "Total amount: {$invoice->getTotalPrice()}";
 
         $notifyData = new NotifyData(
-            resourceId: Uuid::fromString($invoice->id),
+            resourceId: Uuid::fromString($invoice->getKey()),
             toEmail: $invoice->customer_email,
-            subject: "Invoice Notification: {$invoice->id}",
+            subject: "Invoice Notification: {$invoice->getKey()}",
             message: $message
         );
 

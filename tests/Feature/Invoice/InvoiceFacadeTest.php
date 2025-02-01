@@ -71,10 +71,10 @@ class InvoiceFacadeTest extends TestCase
     {
         $invoice = Invoice::factory()->create();
 
-        $foundInvoice = $this->invoiceFacade->find($invoice->id);
+        $foundInvoice = $this->invoiceFacade->find($invoice->getKey());
 
         $this->assertInstanceOf(Invoice::class, $foundInvoice);
-        $this->assertEquals($invoice->id, $foundInvoice->id);
+        $this->assertEquals($invoice->getKey(), $foundInvoice->getKey());
     }
 
     public function testGetAllInvoices(): void
@@ -88,6 +88,7 @@ class InvoiceFacadeTest extends TestCase
 
     public function testUpdateInvoiceStatus(): void
     {
+        /** @var Invoice $invoice */
         $invoice = Invoice::factory()->create(['status' => StatusEnum::Draft]);
 
         $this->invoiceFacade->updateStatus($invoice, StatusEnum::SentToClient);

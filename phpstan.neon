@@ -1,0 +1,15 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - routes
+        - src
+        - tests
+    bootstrapFiles:
+        - vendor/autoload.php

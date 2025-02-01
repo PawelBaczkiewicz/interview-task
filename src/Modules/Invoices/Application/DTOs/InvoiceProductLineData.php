@@ -31,7 +31,7 @@ final readonly class InvoiceProductLineData
     public function __toArray(): array
     {
         return [
-            'id' => $this->id?->toString(),
+            'id' => $this->id->toString(),
             'product_name' => $this->product_name,
             'unit_price' => $this->unit_price,
             'quantity' => $this->quantity

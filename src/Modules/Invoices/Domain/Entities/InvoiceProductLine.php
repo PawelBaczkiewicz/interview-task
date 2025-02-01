@@ -9,6 +9,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @property string $id
+ * @property string $invoice_id
+ * @property string $product_name
+ * @property int $quantity
+ * @property int $unit_price
+ */
 class InvoiceProductLine extends Model
 {
     use HasFactory;

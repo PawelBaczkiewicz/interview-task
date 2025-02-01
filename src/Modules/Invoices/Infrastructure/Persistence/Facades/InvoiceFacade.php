@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Invoices\Infrastructure\Persistence\Facades;
 
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Modules\Invoices\Application\DTOs\InvoiceData;
@@ -63,14 +63,13 @@ class InvoiceFacade implements InvoiceFacadeInterface
         ]);
 
         foreach ($data->invoiceProductLines as $productLineData) {
-            $invoiceProductLine = new InvoiceProductLine([
+            InvoiceProductLine::create([
                 'id' => $productLineData->id,
                 'invoice_id' => $invoice->id,
                 'product_name' => $productLineData->product_name,
                 'quantity' => $productLineData->quantity,
                 'unit_price' => $productLineData->unit_price,
             ]);
-            $invoiceProductLine->save();
         }
 
         return $invoice;
